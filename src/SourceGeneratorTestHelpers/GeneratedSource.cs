@@ -6,12 +6,12 @@ public sealed class GeneratedSource : IEquatable<GeneratedSource>
     /// <summary>Gets the path to the generated source file.</summary>
     public string FilePath { get; }
 
-    /// <summary>Gets the source code of the generated file.</summary>
+    /// <summary>Gets the source of the generated file.</summary>
     public string Source { get; }
 
     /// <summary>Initializes a new instance of the <see cref="GeneratedSource" /> class.</summary>
     /// <param name="filePath">The path to the generated source file.</param>
-    /// <param name="source">The source code of the generated file.</param>
+    /// <param name="source">The source of the generated file.</param>
     public GeneratedSource(string filePath, string source)
     {
         FilePath = filePath;
