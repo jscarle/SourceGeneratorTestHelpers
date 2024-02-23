@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <ImplicitUsings>true</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>SourceGeneratorTestHelpers.XUnit</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <Version>8.0.5</Version>
+        <Title>SourceGeneratorTestHelpers.XUnit</Title>
+        <Authors>Jean-Sebastien Carle</Authors>
+        <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
+        <Copyright>Copyright © Jean-Sebastien Carle 2024</Copyright>
+        <PackageId>SourceGeneratorTestHelpers.XUnit</PackageId>
+        <PackageProjectUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</PackageProjectUrl>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>testing source-generators</PackageTags>
+        <AssemblyVersion>8.0.5.0</AssemblyVersion>
+        <FileVersion>8.0.5.0</FileVersion>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <AnalysisLevel>latest-All</AnalysisLevel>
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1"/>
+        <PackageReference Include="SourceGeneratorTestHelpers" Version="8.0.5"/>
+        <PackageReference Include="xunit.assert" Version="2.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+        <None Include="..\..\LICENSE.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+            <Visible>False</Visible>
+        </None>
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+            <Visible>False</Visible>
+        </None>
+    </ItemGroup>
+
+</Project>

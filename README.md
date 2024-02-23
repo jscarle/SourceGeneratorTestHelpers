@@ -31,3 +31,33 @@ var generatedSources =  result.GetSources();
 ```csharp
 var generatedSource =  result.GetSource("TestId.g.cs");
 ```
+
+### Compare the generated source with the expected source
+
+You can produce a diff between the generated source and the expected source. The result will contain a boolean `hasDifferences` and a line by line diff in `differences`.
+
+```csharp
+var (hasDifferences, differences) = Diff.Compare(generatedSource, expectedSource);
+```
+
+#### Assert the difference
+
+Using one of the testing framework packages below, you can also assert the difference between the generated source and the expected source.
+
+[![XUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=XUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.XUnit)
+[![NUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=NUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.NUnit)
+[![MSTest](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=MSTest)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.MSTest)
+
+```csharp
+var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+
+result.ShouldProduce("TestId.g.cs", "expected source");
+```
+
+_Note: If you do not wish to assert on errors produced during diagnostics of the source generator run, you can simply disable them as such._
+
+```csharp
+var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+
+result.ShouldProduce("TestId.g.cs", "expected source", false);
+```
