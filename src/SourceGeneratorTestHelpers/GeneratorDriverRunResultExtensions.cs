@@ -59,7 +59,7 @@ public static class GeneratorDriverRunResultExtensions
     /// <param name="assertOnErrors"><see langword="true" /> to assert on reported errors by the source generator, <see langword="false" /> othwerwise.</param>
     /// <param name="assertAction">The action to perform when an assertion fails. This typically involves throwing an exception with a descriptive error message.</param>
     /// <exception cref="ArgumentNullException">If <paramref name="result" /> is null.</exception>
-    internal static void ShouldProduce(this GeneratorDriverRunResult result, string filePathEndsWith, string expectedSource, bool assertOnErrors, Action<string> assertAction)
+    internal static void InternalShouldProduce(this GeneratorDriverRunResult result, string filePathEndsWith, string expectedSource, bool assertOnErrors, Action<string> assertAction)
     {
         var generatedSource = GetSource(result, filePathEndsWith);
 
