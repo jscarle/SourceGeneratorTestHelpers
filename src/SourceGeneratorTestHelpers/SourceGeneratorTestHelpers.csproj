@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers</RootNamespace>
         <LangVersion>latest</LangVersion>
-        <Version>8.0.4</Version>
+        <Version>8.0.5</Version>
         <Title>SourceGeneratorTestHelpers</Title>
         <Authors>Jean-Sebastien Carle</Authors>
         <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
@@ -18,8 +18,8 @@
         <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>testing source-generators</PackageTags>
-        <AssemblyVersion>8.0.4.0</AssemblyVersion>
-        <FileVersion>8.0.4.0</FileVersion>
+        <AssemblyVersion>8.0.5.0</AssemblyVersion>
+        <FileVersion>8.0.5.0</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -37,9 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1"/>
-		<PackageReference Include="DiffPlex" Version="1.7.2"/>
-	</ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1"/>
+        <PackageReference Include="DiffPlex" Version="1.7.2"/>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
