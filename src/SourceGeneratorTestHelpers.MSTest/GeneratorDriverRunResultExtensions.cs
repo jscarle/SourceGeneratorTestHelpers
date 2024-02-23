@@ -20,6 +20,6 @@ public static class GeneratorDriverRunResultExtensions
         if (result is null)
             throw new ArgumentNullException(nameof(result));
 #endif
-        result.ShouldProduce(filePathEndsWith, expectedSource, assertOnErrors, message => throw new AssertFailedException(message));
+        result.InternalShouldProduce(filePathEndsWith, expectedSource, assertOnErrors, message => throw new AssertFailedException(message));
     }
 }
