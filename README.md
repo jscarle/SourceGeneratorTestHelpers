@@ -45,8 +45,8 @@ var (hasDifferences, differences) = Diff.Compare(generatedSource, expectedSource
 Using one of the testing framework packages below, you can also assert the difference between the generated source and the expected source.
 
 [![XUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=XUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.XUnit)
-[![NUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=NUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.NUnit)
-[![MSTest](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=MSTest)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.MSTest)
+[![NUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.NUnit?label=NUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.NUnit)
+[![MSTest](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.MSTest?label=MSTest)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.MSTest)
 
 ```csharp
 var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
