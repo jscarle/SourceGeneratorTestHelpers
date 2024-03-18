@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers.NUnit</RootNamespace>
         <LangVersion>latest</LangVersion>
-        <Version>8.0.7</Version>
+        <Version>8.0.8</Version>
         <Title>SourceGeneratorTestHelpers.NUnit</Title>
         <Authors>Jean-Sebastien Carle</Authors>
         <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
@@ -18,8 +18,8 @@
         <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>testing source-generators nunit</PackageTags>
-        <AssemblyVersion>8.0.7.0</AssemblyVersion>
-        <FileVersion>8.0.7.0</FileVersion>
+        <AssemblyVersion>8.0.8.0</AssemblyVersion>
+        <FileVersion>8.0.8.0</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -32,8 +32,9 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1"/>
-        <PackageReference Include="SourceGeneratorTestHelpers" Version="8.0.7"/>
-        <PackageReference Include="NUnit" Version="3.0.0"/>
+        <PackageReference Include="SourceGeneratorTestHelpers" Version="8.0.8"/>
+        <PackageReference Include="NUnit" Version="3.13.3"/>
+        <PackageReference Include="Verify.NUnit" Version="20.8.2"/>
     </ItemGroup>
 
     <ItemGroup>

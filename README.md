@@ -40,7 +40,7 @@ You can produce a diff between the generated source and the expected source. The
 var (hasDifferences, differences) = Diff.Compare(generatedSource, expectedSource);
 ```
 
-#### Assert the difference
+## Assert the difference
 
 Using one of the testing framework packages below, you can also assert the difference between the generated source and the expected source.
 
@@ -60,4 +60,53 @@ _Note: If you do not wish to assert on errors produced during diagnostics of the
 var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
 
 result.ShouldProduce("TestId.g.cs", "expected source", false);
+```
+
+### Verify the difference
+
+Support for [Verify](https://github.com/VerifyTests/Verify) is built-in using the `VerifyAsync` method.
+
+#### XUnit
+
+```cs
+public class SourceGeneratorTests
+{
+    [Fact]
+    public Task ShouldProductTestId()
+    {
+        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        return result.VerifyAsync("TestId.g.cs");
+    }
+}
+```
+
+#### NUnit
+
+```cs
+[TestFixture]
+public class SourceGeneratorTests
+{
+    [Test]
+    public Task ShouldProductTestId()
+    {
+        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        return result.VerifyAsync("TestId.g.cs");
+    }
+}
+```
+
+#### MSTest
+
+```cs
+[TestClass]
+public class SourceGeneratorTests :
+    GeneratorDriverTestBase
+{
+    [TestMethod]
+    public Task ShouldProductTestId()
+    {
+        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        return VerifyAsync("TestId.g.cs");
+    }
+}
 ```
