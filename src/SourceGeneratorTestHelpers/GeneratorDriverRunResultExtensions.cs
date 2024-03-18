@@ -50,17 +50,16 @@ public static class GeneratorDriverRunResultExtensions
         return generatedFileSyntax?.GetText().ToString();
     }
 
-    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult" /> with a specific file path ending matches the expected source.</summary>
+
+    /// <summary>Gets the generated source from a <see cref="GeneratorDriverRunResult" /> with a specific file path ending.</summary>
     /// <param name="result">The <see cref="GeneratorDriverRunResult" /> to get the source from.</param>
     /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
-    /// <param name="expectedSource">The expected source that the generated source should match.</param>
     /// <param name="assertOnErrors"><see langword="true" /> to assert on reported errors by the source generator, <see langword="false" /> othwerwise.</param>
     /// <param name="assertAction">The action to perform when an assertion fails. This typically involves throwing an exception with a descriptive error message.</param>
+    /// <returns>The source of the generated file, or null if no matching file is found.</returns>
     /// <exception cref="ArgumentNullException">If <paramref name="result" /> is null.</exception>
-    internal static void InternalShouldProduce(this GeneratorDriverRunResult result, string filePathEndsWith, string expectedSource, bool assertOnErrors, Action<string> assertAction)
+    internal static string? InternalGetSource(this GeneratorDriverRunResult result, string filePathEndsWith, bool assertOnErrors, Action<string> assertAction)
     {
-        var generatedSource = GetSource(result, filePathEndsWith);
-
         if (assertOnErrors)
         {
             var errors = result.Diagnostics.Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToList();
@@ -84,6 +83,22 @@ public static class GeneratorDriverRunResultExtensions
                 assertAction(errorBuilder.ToString());
             }
         }
+
+        var generatedSource = GetSource(result, filePathEndsWith);
+
+        return generatedSource;
+    }
+
+    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult" /> with a specific file path ending matches the expected source.</summary>
+    /// <param name="result">The <see cref="GeneratorDriverRunResult" /> to get the source from.</param>
+    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
+    /// <param name="expectedSource">The expected source that the generated source should match.</param>
+    /// <param name="assertOnErrors"><see langword="true" /> to assert on reported errors by the source generator, <see langword="false" /> othwerwise.</param>
+    /// <param name="assertAction">The action to perform when an assertion fails. This typically involves throwing an exception with a descriptive error message.</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="result" /> is null.</exception>
+    internal static void InternalShouldProduce(this GeneratorDriverRunResult result, string filePathEndsWith, string expectedSource, bool assertOnErrors, Action<string> assertAction)
+    {
+        var generatedSource = InternalGetSource(result, filePathEndsWith, assertOnErrors, assertAction);
 
         var (hasDifferences, differences) = Diff.Compare(expectedSource ?? "", generatedSource ?? "");
 
