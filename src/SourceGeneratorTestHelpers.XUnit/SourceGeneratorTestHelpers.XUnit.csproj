@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers.XUnit</RootNamespace>
         <LangVersion>latest</LangVersion>
-        <Version>8.0.10</Version>
+        <Version>8.0.11</Version>
         <Title>SourceGeneratorTestHelpers.XUnit</Title>
         <Authors>Jean-Sebastien Carle</Authors>
         <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
@@ -18,8 +18,8 @@
         <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>testing source-generators xunit</PackageTags>
-        <AssemblyVersion>8.0.10.0</AssemblyVersion>
-        <FileVersion>8.0.10.0</FileVersion>
+        <AssemblyVersion>8.0.11.0</AssemblyVersion>
+        <FileVersion>8.0.11.0</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -32,7 +32,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1"/>
-        <PackageReference Include="SourceGeneratorTestHelpers" Version="8.0.10"/>
+        <PackageReference Include="SourceGeneratorTestHelpers" Version="8.0.11"/>
         <PackageReference Include="Verify.Xunit" Version="20.8.2"/>
         <PackageReference Include="xunit.assert" Version="2.0.0"/>
     </ItemGroup>
