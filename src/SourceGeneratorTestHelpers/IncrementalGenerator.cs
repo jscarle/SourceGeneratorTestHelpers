@@ -21,9 +21,8 @@ public static class IncrementalGenerator
     )
         where T : IIncrementalGenerator, new()
     {
-        var generator = new T();
-
-        var driver = CSharpGeneratorDriver.Create(generator);
+        var generators = GetGenerators<T>().Select(x => x.AsSourceGenerator());
+        var driver = CSharpGeneratorDriver.Create(generators, null, cSharpParseOptions);
 
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
@@ -52,9 +51,8 @@ public static class IncrementalGenerator
     )
         where T : IIncrementalGenerator, new()
     {
-        var generator = new T();
-
-        var driver = CSharpGeneratorDriver.Create(generator);
+        var generators = GetGenerators<T>().Select(x => x.AsSourceGenerator());
+        var driver = CSharpGeneratorDriver.Create(generators, null, cSharpParseOptions);
 
         var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(source, cSharpParseOptions)).ToArray();
 
@@ -68,5 +66,11 @@ public static class IncrementalGenerator
         var runResult = driver.RunGenerators(compilation).GetRunResult();
 
         return runResult;
+    }
+
+    private static IEnumerable<T> GetGenerators<T>()
+        where T : IIncrementalGenerator, new()
+    {
+        yield return new T();
     }
 }
