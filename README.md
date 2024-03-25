@@ -34,7 +34,8 @@ var generatedSource =  result.GetSource("TestId.g.cs");
 
 ### Compare the generated source with the expected source
 
-You can produce a diff between the generated source and the expected source. The result will contain a boolean `hasDifferences` and a line by line diff in `differences`.
+You can produce a diff between the generated source and the expected source. The result will contain a boolean `hasDifferences` and a line by line diff
+in `differences`.
 
 ```csharp
 var (hasDifferences, differences) = Diff.Compare(generatedSource, expectedSource);

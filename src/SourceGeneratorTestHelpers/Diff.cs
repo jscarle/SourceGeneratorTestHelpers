@@ -15,7 +15,12 @@ public static class Diff
     /// <param name="normalizeLineEndings">Optional flag indicating whether to normalize line endings to '\n' before comparison. Defaults to true.</param>
     /// <param name="ignoreWhitespace">Optional flag indicating whether to ignore whitespace differences. Defaults to false.</param>
     /// <returns>A tuple containing a boolean indicating whether differences exist and a string representing the diff report.</returns>
-    public static (bool HasDifferences, string Differences) Compare(string? string1, string? string2, bool normalizeLineEndings = true, bool ignoreWhitespace = false)
+    public static (bool HasDifferences, string Differences) Compare(
+        string? string1,
+        string? string2,
+        bool normalizeLineEndings = true,
+        bool ignoreWhitespace = false
+    )
     {
         // Pad the left margin to align line numbers.
         const int leftMargin = 7;
@@ -45,7 +50,8 @@ public static class Diff
 #if NET6_0_OR_GREATER
                         CultureInfo.InvariantCulture,
 #endif
-                        $"{prefix,leftMargin}+ {lineText}");
+                        $"{prefix,leftMargin}+ {lineText}"
+                        );
 
                     break;
                 case ChangeType.Deleted:
@@ -53,7 +59,8 @@ public static class Diff
 #if NET6_0_OR_GREATER
                         CultureInfo.InvariantCulture,
 #endif
-                        $"{prefix,leftMargin}- {lineText}");
+                        $"{prefix,leftMargin}- {lineText}"
+                        );
 
                     break;
             }
@@ -65,12 +72,13 @@ public static class Diff
     private static string? NormalizeLineEndings(string? str, bool normalize)
     {
         return normalize
-            ? str?.Replace("\r\n",
+            ? str?.Replace(
+                "\r\n",
                 "\n"
 #if NET6_0_OR_GREATER
             , StringComparison.InvariantCulture
 #endif
-            )
+                )
             : str;
     }
 }
