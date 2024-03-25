@@ -1,3 +1,4 @@
+using Basic.Reference.Assemblies;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -27,7 +28,7 @@ public static class IncrementalGenerator
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
             new[] { CSharpSyntaxTree.ParseText(source, cSharpParseOptions) },
-            metadataReferences ?? new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) },
+            metadataReferences ?? NetStandard20.References.All,
             cSharpCompilationOptions
             );
 
@@ -59,7 +60,7 @@ public static class IncrementalGenerator
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
             syntaxTrees,
-            metadataReferences ?? new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) },
+            metadataReferences ?? NetStandard20.References.All,
             cSharpCompilationOptions
             );
 
