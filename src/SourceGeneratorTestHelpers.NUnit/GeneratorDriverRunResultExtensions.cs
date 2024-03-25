@@ -35,6 +35,6 @@ public static class GeneratorDriverRunResultExtensions
         var generatedSource = result.InternalGetSource(filePathEndsWith, assertOnErrors, message => throw new AssertionException(message));
 
         // ReSharper disable once ExplicitCallerInfoArgument
-        return Verify(generatedSource, "cs", verifySettings, sourceFile);
+        return Verify(generatedSource, "txt", verifySettings, sourceFile);
     }
 }
