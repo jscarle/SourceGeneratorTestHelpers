@@ -9,8 +9,9 @@ public static class SourceGenerator
     /// <summary>Executes a specified <see cref="ISourceGenerator"/> against the provided source within a testing environment.</summary>
     /// <typeparam name="T">The type of <see cref="ISourceGenerator"/> to execute.</typeparam>
     /// <param name="source">The source to be analyzed and processed by the <see cref="ISourceGenerator"/>.</param>
+    /// <param name="metadataReferences">The metadata references to compile with.</param>
     /// <returns>The results of the <see cref="ISourceGenerator"/> execution.</returns>
-    public static GeneratorDriverRunResult Run<T>(string source)
+    public static GeneratorDriverRunResult Run<T>(string source, IEnumerable<MetadataReference>? metadataReferences = null)
         where T : ISourceGenerator, new()
     {
         var generator = new T();
@@ -20,7 +21,7 @@ public static class SourceGenerator
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
             new[] { CSharpSyntaxTree.ParseText(source) },
-            new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) }
+            metadataReferences ?? new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) }
             );
 
         var runResult = driver.RunGenerators(compilation).GetRunResult();
@@ -31,8 +32,9 @@ public static class SourceGenerator
     /// <summary>Executes a specified <see cref="ISourceGenerator"/> against the provided source within a testing environment.</summary>
     /// <typeparam name="T">The type of <see cref="ISourceGenerator"/> to execute.</typeparam>
     /// <param name="sources">The sources to be analyzed and processed by the <see cref="ISourceGenerator"/>.</param>
+    /// <param name="metadataReferences">The metadata references to compile with.</param>
     /// <returns>The results of the <see cref="ISourceGenerator"/> execution.</returns>
-    public static GeneratorDriverRunResult Run<T>(IEnumerable<string> sources)
+    public static GeneratorDriverRunResult Run<T>(IEnumerable<string> sources, IEnumerable<MetadataReference>? metadataReferences = null)
         where T : ISourceGenerator, new()
     {
         var generator = new T();
@@ -44,7 +46,7 @@ public static class SourceGenerator
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
             syntaxTrees,
-            new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) }
+            metadataReferences ?? new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) }
             );
 
         var runResult = driver.RunGenerators(compilation).GetRunResult();
