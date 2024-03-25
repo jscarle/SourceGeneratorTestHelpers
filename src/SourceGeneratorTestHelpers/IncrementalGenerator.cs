@@ -27,7 +27,7 @@ public static class IncrementalGenerator
 
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
-            new[] { CSharpSyntaxTree.ParseText(source) },
+            new[] { CSharpSyntaxTree.ParseText(source, cSharpParseOptions) },
             metadataReferences ?? new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) },
             cSharpCompilationOptions
             );
@@ -56,7 +56,7 @@ public static class IncrementalGenerator
 
         var driver = CSharpGeneratorDriver.Create(generator);
 
-        var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(source)).ToArray();
+        var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(source, cSharpParseOptions)).ToArray();
 
         var compilation = CSharpCompilation.Create(
             nameof(SourceGeneratorTestHelpers),
