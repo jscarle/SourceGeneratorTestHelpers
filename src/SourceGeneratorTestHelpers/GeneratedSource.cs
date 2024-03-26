@@ -1,12 +1,9 @@
 ﻿namespace SourceGeneratorTestHelpers;
 
 /// <summary>Represents a generated source file.</summary>
-public sealed class GeneratedSource : IEquatable<GeneratedSource>
+public readonly struct GeneratedSource : IEquatable<GeneratedSource>
 {
-    /// <summary>Initializes a new instance of the <see cref="GeneratedSource"/> class.</summary>
-    /// <param name="filePath">The path to the generated source file.</param>
-    /// <param name="source">The source of the generated file.</param>
-    public GeneratedSource(string filePath, string source)
+    internal GeneratedSource(string filePath, string source)
     {
         FilePath = filePath;
         Source = source;
@@ -19,21 +16,15 @@ public sealed class GeneratedSource : IEquatable<GeneratedSource>
     public string Source { get; }
 
     /// <inheritdoc/>
-    public bool Equals(GeneratedSource? other)
+    public bool Equals(GeneratedSource other)
     {
-        if (ReferenceEquals(null, other))
-            return false;
-
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return FilePath == other.FilePath;
+        return FilePath == other.FilePath && Source == other.Source;
     }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        return ReferenceEquals(this, obj) || (obj is GeneratedSource other && Equals(other));
+        return obj is GeneratedSource other && Equals(other);
     }
 
     /// <inheritdoc/>
@@ -43,7 +34,7 @@ public sealed class GeneratedSource : IEquatable<GeneratedSource>
             #if NET6_0_OR_GREATER
             StringComparison.Ordinal
 #endif
-            );
+        );
     }
 
     /// <summary>Determines if two <see cref="GeneratedSource"/> instances are equal.</summary>

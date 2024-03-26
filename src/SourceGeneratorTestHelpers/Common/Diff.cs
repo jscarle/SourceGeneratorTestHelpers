@@ -4,17 +4,10 @@ using DiffPlex;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 
-namespace SourceGeneratorTestHelpers;
+namespace SourceGeneratorTestHelpers.Common;
 
-/// <summary>Provides utility methods for comparing text and generating diffs.</summary>
-public static class Diff
+internal static class Diff
 {
-    /// <summary>Compares two strings and generates a diff report indicating the differences between them.</summary>
-    /// <param name="string1">The first string to compare.</param>
-    /// <param name="string2">The second string to compare.</param>
-    /// <param name="normalizeLineEndings">Optional flag indicating whether to normalize line endings to '\n' before comparison. Defaults to true.</param>
-    /// <param name="ignoreWhitespace">Optional flag indicating whether to ignore whitespace differences. Defaults to false.</param>
-    /// <returns>A tuple containing a boolean indicating whether differences exist and a string representing the diff report.</returns>
     public static (bool HasDifferences, string Differences) Compare(
         string? string1,
         string? string2,
@@ -51,7 +44,7 @@ public static class Diff
                         CultureInfo.InvariantCulture,
 #endif
                         $"{prefix,leftMargin}+ {lineText}"
-                        );
+                    );
 
                     break;
                 case ChangeType.Deleted:
@@ -60,7 +53,7 @@ public static class Diff
                         CultureInfo.InvariantCulture,
 #endif
                         $"{prefix,leftMargin}- {lineText}"
-                        );
+                    );
 
                     break;
             }
@@ -78,7 +71,7 @@ public static class Diff
 #if NET6_0_OR_GREATER
             , StringComparison.InvariantCulture
 #endif
-                )
+            )
             : str;
     }
 }
