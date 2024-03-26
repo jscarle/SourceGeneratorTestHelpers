@@ -108,6 +108,7 @@ public static class GeneratorDriverRunResultExtensions
     {
         var generatedSource = InternalGetSource(result, filePathEndsWith, assertOnErrors, assertAction);
 
+        // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         var (hasDifferences, differences) = Diff.Compare(expectedSource ?? "", generatedSource ?? "");
 
         if (hasDifferences)
