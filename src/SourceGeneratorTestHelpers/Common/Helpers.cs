@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace SourceGeneratorTestHelpers.Common;
 
-public static class Helpers
+internal static class Helpers
 {
     internal static CSharpParseOptions DefaultCSharpParseOptions { get; } = new(LanguageVersion.Latest);
     internal static IEnumerable<MetadataReference> DefaultMetadataReferences { get; } = NetStandard20.References.All;
@@ -14,7 +14,7 @@ public static class Helpers
     internal static CSharpCompilationOptions DefaultCSharpCompilationOptions { get; } =
         new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithNullableContextOptions(NullableContextOptions.Enable);
 
-    internal static (ImmutableArray<Diagnostic> Diagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
+    internal static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
         ISourceGenerator generator,
         string source,
         CSharpParseOptions? cSharpParseOptions,
@@ -27,7 +27,7 @@ public static class Helpers
         return InternalRunGenerator(generator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
     }
 
-    internal static (ImmutableArray<Diagnostic> Diagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
+    internal static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
         ISourceGenerator generator,
         IEnumerable<string> sources,
         CSharpParseOptions? cSharpParseOptions,
