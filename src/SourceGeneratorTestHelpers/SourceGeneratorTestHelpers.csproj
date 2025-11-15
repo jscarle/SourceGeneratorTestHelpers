@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers</RootNamespace>
         <LangVersion>latest</LangVersion>
-        <Version>8.1.0</Version>
+        <Version>10.0.0</Version>
         <Title>SourceGeneratorTestHelpers</Title>
         <Authors>Jean-Sebastien Carle</Authors>
         <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
-        <Copyright>Copyright © Jean-Sebastien Carle 2024</Copyright>
+        <Copyright>Copyright © Jean-Sebastien Carle 2025</Copyright>
         <PackageId>SourceGeneratorTestHelpers</PackageId>
         <PackageProjectUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</PackageProjectUrl>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -18,8 +18,8 @@
         <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>testing source-generators</PackageTags>
-        <AssemblyVersion>8.1.0.0</AssemblyVersion>
-        <FileVersion>8.1.0.0</FileVersion>
+        <AssemblyVersion>10.0.0.0</AssemblyVersion>
+        <FileVersion>10.0.0.0</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -37,9 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Basic.Reference.Assemblies.NetStandard20" Version="1.7.2"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
-        <PackageReference Include="DiffPlex" Version="1.7.2"/>
+        <PackageReference Include="Basic.Reference.Assemblies.NetStandard20" Version="1.8.3" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+        <PackageReference Include="DiffPlex" Version="1.9.0" />
     </ItemGroup>
 
     <ItemGroup>

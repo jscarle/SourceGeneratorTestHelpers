@@ -41,13 +41,17 @@ internal static class Helpers
         cSharpCompilationOptions ??= DefaultCSharpCompilationOptions;
 
         var compilation = CSharpCompilation.Create(nameof(SourceGeneratorTestHelpers), syntaxTrees, metadataReferences, cSharpCompilationOptions);
-        var diagnostics = compilation.GetDiagnostics();
-
         var generators = new[] { generator };
         var driver = CSharpGeneratorDriver.Create(generators, null, cSharpParseOptions);
-        var runResult = driver.RunGenerators(compilation).GetRunResult();
+        var updatedDriver = driver.RunGeneratorsAndUpdateCompilation(
+            compilation,
+            out var updatedCompilation,
+            out var generatorDiagnostics);
+        var compilationDiagnostics = updatedCompilation.GetDiagnostics();
+        var allDiagnostics = compilationDiagnostics.AddRange(generatorDiagnostics);
+        var runResult = updatedDriver.GetRunResult();
 
-        return (diagnostics, runResult);
+        return (allDiagnostics, runResult);
     }
 
     internal static void InternalAssertOnDiagnostics(
