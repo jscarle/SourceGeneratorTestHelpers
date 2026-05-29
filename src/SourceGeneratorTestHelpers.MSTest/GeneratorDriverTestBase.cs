@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using SourceGeneratorTestHelpers.Common;
+using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 
 namespace SourceGeneratorTestHelpers.MSTest;
 
-internal abstract class GeneratorDriverTestBase : VerifyBase
+public abstract class GeneratorDriverTestBase : VerifyBase
 {
     /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path ending matches the expected source.</summary>
     /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
