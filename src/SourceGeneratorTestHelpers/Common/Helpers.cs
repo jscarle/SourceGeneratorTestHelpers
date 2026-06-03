@@ -1,8 +1,8 @@
-﻿using System.Collections.Immutable;
-using System.Text;
 using Basic.Reference.Assemblies;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
+using System.Text;
 
 namespace SourceGeneratorTestHelpers.Common;
 
@@ -21,11 +21,7 @@ internal static class Helpers
         IEnumerable<MetadataReference>? metadataReferences,
         CSharpCompilationOptions? cSharpCompilationOptions
     )
-    {
-        var sources = new[] { source };
-
-        return InternalRunGenerator(generator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
-    }
+        => InternalRunGenerator(generator, [source], cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
 
     internal static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
         ISourceGenerator generator,

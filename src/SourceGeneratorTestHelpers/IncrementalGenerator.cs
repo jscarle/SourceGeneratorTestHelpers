@@ -1,7 +1,7 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SourceGeneratorTestHelpers.Common;
+using System.Collections.Immutable;
 
 namespace SourceGeneratorTestHelpers;
 
@@ -25,11 +25,7 @@ public static class IncrementalGenerator
         CSharpCompilationOptions? cSharpCompilationOptions = null
     )
         where T : IIncrementalGenerator, new()
-    {
-        var generator = new T().AsSourceGenerator();
-
-        return Helpers.InternalRunGenerator(generator, source, cSharpParseOptions, metadataReferences, cSharpCompilationOptions).Result;
-    }
+    => Run<T>(source, out _, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
 
     /// <summary>Gather compilation diagnostics and executes a specified <see cref="IIncrementalGenerator"/> against the provided sources within a testing environment.</summary>
     /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
@@ -48,12 +44,7 @@ public static class IncrementalGenerator
         CSharpCompilationOptions? cSharpCompilationOptions = null
     )
         where T : IIncrementalGenerator, new()
-    {
-        var generator = new T().AsSourceGenerator();
-
-        return Helpers.InternalRunGenerator(generator, source, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
-    }
-
+    => RunWithDiagnostics<T>(source, out _, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
     /// <summary>Executes a specified <see cref="IIncrementalGenerator"/> against the provided sources within a testing environment.</summary>
     /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
     /// <param name="sources">The sources to be analyzed and processed by the <see cref="IIncrementalGenerator"/>.</param>
@@ -71,11 +62,7 @@ public static class IncrementalGenerator
         CSharpCompilationOptions? cSharpCompilationOptions = null
     )
         where T : IIncrementalGenerator, new()
-    {
-        var generator = new T().AsSourceGenerator();
-
-        return Helpers.InternalRunGenerator(generator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions).Result;
-    }
+    => Run<T>(sources, out _, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
 
     /// <summary>Gather compilation diagnostics and executes a specified <see cref="IIncrementalGenerator"/> against the provided sources within a testing environment.</summary>
     /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
@@ -94,9 +81,99 @@ public static class IncrementalGenerator
         CSharpCompilationOptions? cSharpCompilationOptions = null
     )
         where T : IIncrementalGenerator, new()
-    {
-        var generator = new T().AsSourceGenerator();
+    => RunWithDiagnostics<T>(sources, out _, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
 
-        return Helpers.InternalRunGenerator(generator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
+    /// <summary>Executes a specified <see cref="IIncrementalGenerator"/> against the provided source within a testing environment.</summary>
+    /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
+    /// <param name="source">The source to be analyzed and processed by the <see cref="IIncrementalGenerator"/>.</param>
+    /// <param name="generator">The generated <see cref="IIncrementalGenerator"/> instance.</param>
+    /// <param name="cSharpParseOptions">The C# source parsing options to compile with. By default, LangVersion will be set to latest.</param>
+    /// <param name="metadataReferences">The metadata references to compile with.</param>
+    /// <param name="cSharpCompilationOptions">
+    /// The C# compilation options to compile with. By default, Output will be set to library, and Nullable will be set to
+    /// enable.
+    /// </param>
+    /// <returns>The results of the <see cref="IIncrementalGenerator"/> execution.</returns>
+    public static GeneratorDriverRunResult Run<T>(
+        string source,
+        out T generator,
+        CSharpParseOptions? cSharpParseOptions = null,
+        IEnumerable<MetadataReference>? metadataReferences = null,
+        CSharpCompilationOptions? cSharpCompilationOptions = null
+    )
+    where T : IIncrementalGenerator, new()
+    => Run([source], out generator, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
+
+    /// <summary>Gather compilation diagnostics and executes a specified <see cref="IIncrementalGenerator"/> against the provided sources within a testing environment.</summary>
+    /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
+    /// <param name="source">The source to be analyzed and processed by the <see cref="IIncrementalGenerator"/>.</param>
+    /// <param name="generator">The generated <see cref="IIncrementalGenerator"/> instance.</param>
+    /// <param name="cSharpParseOptions">The C# source parsing options to compile with. By default, LangVersion will be set to latest.</param>
+    /// <param name="metadataReferences">The metadata references to compile with.</param>
+    /// <param name="cSharpCompilationOptions">
+    /// The C# compilation options to compile with. By default, Output will be set to library, and Nullable will be set to
+    /// enable.
+    /// </param>
+    /// <returns>The compilation diagnostics and the result of the <see cref="IIncrementalGenerator"/> execution.</returns>
+    public static (ImmutableArray<Diagnostic> Diagnostics, GeneratorDriverRunResult Result) RunWithDiagnostics<T>(
+        string source,
+        out T generator,
+        CSharpParseOptions? cSharpParseOptions = null,
+        IEnumerable<MetadataReference>? metadataReferences = null,
+        CSharpCompilationOptions? cSharpCompilationOptions = null
+    )
+        where T : IIncrementalGenerator, new()
+    => RunWithDiagnostics([source], out generator, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
+
+    /// <summary>Executes a specified <see cref="IIncrementalGenerator"/> against the provided sources within a testing environment.</summary>
+    /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
+    /// <param name="sources">The sources to be analyzed and processed by the <see cref="IIncrementalGenerator"/>.</param>
+    /// <param name="generator">The generated <see cref="IIncrementalGenerator"/> instance.</param>
+    /// <param name="cSharpParseOptions">The C# source parsing options to compile with. By default, LangVersion will be set to latest.</param>
+    /// <param name="metadataReferences">The metadata references to compile with.</param>
+    /// <param name="cSharpCompilationOptions">
+    /// The C# compilation options to compile with. By default, Output will be set to library, and Nullable will be set to
+    /// enable.
+    /// </param>
+    /// <returns>The result of the <see cref="IIncrementalGenerator"/> execution.</returns>
+    public static GeneratorDriverRunResult Run<T>(
+        IEnumerable<string> sources,
+        out T generator,
+        CSharpParseOptions? cSharpParseOptions = null,
+        IEnumerable<MetadataReference>? metadataReferences = null,
+        CSharpCompilationOptions? cSharpCompilationOptions = null
+    )
+        where T : IIncrementalGenerator, new()
+    {
+        generator = new T();
+        var sourceGenerator = generator.AsSourceGenerator();
+
+        return Helpers.InternalRunGenerator(sourceGenerator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions).Result;
+    }
+
+    /// <summary>Gather compilation diagnostics and executes a specified <see cref="IIncrementalGenerator"/> against the provided sources within a testing environment.</summary>
+    /// <typeparam name="T">The type of <see cref="IIncrementalGenerator"/> to execute.</typeparam>
+    /// <param name="sources">The sources to be analyzed and processed by the <see cref="IIncrementalGenerator"/>.</param>
+    /// <param name="generator">The generated <see cref="IIncrementalGenerator"/> instance.</param>
+    /// <param name="cSharpParseOptions">The C# source parsing options to compile with. By default, LangVersion will be set to latest.</param>
+    /// <param name="metadataReferences">The metadata references to compile with.</param>
+    /// <param name="cSharpCompilationOptions">
+    /// The C# compilation options to compile with. By default, Output will be set to library, and Nullable will be set to
+    /// enable.
+    /// </param>
+    /// <returns>The compilation diagnostics and the result of the <see cref="IIncrementalGenerator"/> execution.</returns>
+    public static (ImmutableArray<Diagnostic> Diagnostics, GeneratorDriverRunResult Result) RunWithDiagnostics<T>(
+        IEnumerable<string> sources,
+        out T generator,
+        CSharpParseOptions? cSharpParseOptions = null,
+        IEnumerable<MetadataReference>? metadataReferences = null,
+        CSharpCompilationOptions? cSharpCompilationOptions = null
+    )
+        where T : IIncrementalGenerator, new()
+    {
+        generator = new T();
+        var sourceGenerator = generator.AsSourceGenerator();
+
+        return Helpers.InternalRunGenerator(sourceGenerator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
     }
 }
