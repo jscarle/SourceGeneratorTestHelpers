@@ -1,8 +1,8 @@
-﻿using System.Globalization;
-using System.Text;
 using DiffPlex;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
+using System.Globalization;
+using System.Text;
 
 namespace SourceGeneratorTestHelpers.Common;
 
@@ -65,10 +65,11 @@ internal static class Diff
     private static string? NormalizeLineEndings(string? str, bool normalize)
     {
         return normalize
-            ? str?.Replace(
+            ?
+            str?.Replace(
                 "\r\n",
                 "\n"
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
             , StringComparison.InvariantCulture
 #endif
             )

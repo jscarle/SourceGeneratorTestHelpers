@@ -1,4 +1,4 @@
-﻿namespace SourceGeneratorTestHelpers;
+namespace SourceGeneratorTestHelpers;
 
 /// <summary>Represents a generated source file.</summary>
 public readonly struct GeneratedSource : IEquatable<GeneratedSource>
@@ -31,7 +31,7 @@ public readonly struct GeneratedSource : IEquatable<GeneratedSource>
     public override int GetHashCode()
     {
         return FilePath.GetHashCode(
-            #if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
             StringComparison.Ordinal
 #endif
         );
