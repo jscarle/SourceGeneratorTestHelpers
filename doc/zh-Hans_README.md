@@ -18,6 +18,22 @@ var result = SourceGenerator.Run<YourSourceGenerator>("要测试的代码");
 var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
 ```
 
+## 添加.NET环境和依赖
+
+```csharp
+    var references = new List<MetadataReference>();
+
+    // 添加 .NET 10 所有程序集（ReferenceAssemblies.Net.Net100）
+    ImmutableArray<MetadataReference> defaultReferences = ReferenceAssemblies.Net.Net100.ResolveAsync(null, default)。Result;
+    references.AddRange(defaultReferences);
+
+    //添加依赖
+    references.Add(MetadataReference.CreateFromFile(
+        Path.Combine("D:","C#", "Lib", "Debug", "net10.0", "XXX.dll")));
+
+    var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码", null, references);
+```
+
 ## 获取生成的源代码
 
 ### 获取所有生成的源代码
