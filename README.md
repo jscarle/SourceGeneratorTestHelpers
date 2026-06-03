@@ -3,7 +3,7 @@
 Test helpers and extension methods to simplify testing of .NET source generators.
 
 # More languages
-    [Chinese](./doc/zh-Hans_README.md)
+[Chinese](./doc/zh-Hans_README.md)
 
 [![main](https://img.shields.io/github/actions/workflow/status/jscarle/SourceGeneratorTestHelpers/main.yml?logo=github)](https://github.com/jscarle/SourceGeneratorTestHelpers)
 [![nuget](https://img.shields.io/nuget/v/SourceGeneratorTestHelpers)](https://www.nuget.org/packages/SourceGeneratorTestHelpers)

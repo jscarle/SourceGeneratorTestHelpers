@@ -34,6 +34,13 @@ var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码")
     var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码", null, references);
 ```
 
+## 获取创建的源生成器/增量源生成器
+```csharp
+    var result = IncrementalGenerator.Run(sourceCode, out YourSourceGenerator generator, null, references);
+```
+```csharp
+    var result = SourceGenerator.Run(sourceCode, out YourSourceGenerator generator, null, references);
+```
 ## 获取生成的源代码
 
 ### 获取所有生成的源代码
