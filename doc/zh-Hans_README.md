@@ -1,74 +1,72 @@
-# Source Generator Test Helpers
+# Source Generator Test Helpers（源生成器测试辅助工具）
 
-Test helpers and extension methods to simplify testing of .NET source generators.
-
-# More languages
-    [Chinese](./doc/zh-Hans_README.md)
+用于简化 .NET 源生成器测试的测试辅助方法和扩展方法。
 
 [![main](https://img.shields.io/github/actions/workflow/status/jscarle/SourceGeneratorTestHelpers/main.yml?logo=github)](https://github.com/jscarle/SourceGeneratorTestHelpers)
 [![nuget](https://img.shields.io/nuget/v/SourceGeneratorTestHelpers)](https://www.nuget.org/packages/SourceGeneratorTestHelpers)
 [![downloads](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers)](https://www.nuget.org/packages/SourceGeneratorTestHelpers)
 
-## Testing a source generator
+## 测试一个源生成器
 
 ```csharp
-var result = SourceGenerator.Run<YourSourceGenerator>("your source");
+var result = SourceGenerator.Run<YourSourceGenerator>("要测试的代码");
 ```
 
-## Testing an incremental source generator
+## 测试一个增量源生成器
 
 ```csharp
-var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
 ```
 
-## Obtaining the generated source
+## 获取生成的源代码
 
-### Getting all generated sources
+### 获取所有生成的源代码
 
 ```csharp
 var generatedSources =  result.GetSources();
 ```
 
-### A single source that ends with a specific file path
+### 获取特定文件的源代码
 
 ```csharp
 var generatedSource =  result.GetSource("TestId.g.cs");
 ```
 
-### Compare the generated source with the expected source
+### 对比生成的源代码与期望的源代码
 
-You can produce a diff between the generated source and the expected source. The result will contain a boolean `hasDifferences` and a line by line diff
-in `differences`.
+你可以对比生成的源代码与期望的源代码之间的差异。结果包含一个bool值 hasDifferences 以及按行区分的差异列表 differences。
 
 ```csharp
 var (hasDifferences, differences) = Diff.Compare(generatedSource, expectedSource);
 ```
 
-## Assert the difference
+## 进行验证
 
-Using one of the testing framework packages below, you can also assert the difference between the generated source and the expected source.
+### 使用断言
+
+借助下面其中一个测试框架包，你还可以断言生成的源代码与期望源的代码之间的差异。
 
 [![XUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.XUnit?label=XUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.XUnit)
 [![NUnit](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.NUnit?label=NUnit)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.NUnit)
 [![MSTest](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.MSTest?label=MSTest)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.MSTest)
 
 ```csharp
-var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
 
-result.ShouldProduce("TestId.g.cs", "expected source");
+result.ShouldProduce("TestId.g.cs", "预期的代码");
 ```
 
-_Note: If you do not wish to assert on errors produced during diagnostics of the source generator run, you can simply disable them as such._
+_注意：如果你不想断言源生成器运行期间的诊断错误，可以像下面这样直接禁用。_
 
 ```csharp
-var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
 
-result.ShouldProduce("TestId.g.cs", "expected source", false);
+result.ShouldProduce("TestId.g.cs", "预期的代码", false);
 ```
 
-### Verify the difference
+### 使用Verify
 
-Support for [Verify](https://github.com/VerifyTests/Verify) is built-in using the `VerifyAsync` method.
+内置了对 [Verify](https://github.com/VerifyTests/Verify) 的支持，通过 VerifyAsync 方法实现。 
 
 #### XUnit
 
@@ -78,7 +76,7 @@ public class SourceGeneratorTests
     [Fact]
     public Task ShouldProductTestId()
     {
-        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
         return result.VerifyAsync("TestId.g.cs");
     }
 }
@@ -93,7 +91,7 @@ public class SourceGeneratorTests
     [Test]
     public Task ShouldProductTestId()
     {
-        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
         return result.VerifyAsync("TestId.g.cs");
     }
 }
@@ -109,7 +107,7 @@ public class SourceGeneratorTests :
     [TestMethod]
     public Task ShouldProductTestId()
     {
-        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        var result = IncrementalGenerator.Run<YourSourceGenerator>("要测试的代码");
         return VerifyAsync("TestId.g.cs");
     }
 }
