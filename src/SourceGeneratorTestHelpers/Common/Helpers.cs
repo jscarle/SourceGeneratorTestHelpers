@@ -16,15 +16,6 @@ internal static class Helpers
 
     internal static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
         ISourceGenerator generator,
-        string source,
-        CSharpParseOptions? cSharpParseOptions,
-        IEnumerable<MetadataReference>? metadataReferences,
-        CSharpCompilationOptions? cSharpCompilationOptions
-    )
-        => InternalRunGenerator(generator, [source], cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
-
-    internal static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
-        ISourceGenerator generator,
         IEnumerable<string> sources,
         CSharpParseOptions? cSharpParseOptions,
         IEnumerable<MetadataReference>? metadataReferences,
@@ -101,9 +92,7 @@ internal static class Helpers
     }
 
     internal static ImmutableList<GeneratedSource> InternalGetSources(this GeneratorDriverRunResult result)
-    {
-        return result.GeneratedTrees.Select(GetGeneratedSource).ToImmutableList();
-    }
+        => [.. result.GeneratedTrees.Select(GetGeneratedSource)];
 
     private static string ToMessage(this IEnumerable<Diagnostic> diagnostics, string reason)
     {
