@@ -22,9 +22,10 @@ internal static class Helpers
         CSharpCompilationOptions? cSharpCompilationOptions
     )
     {
-        var sources = new[] { source };
+        cSharpParseOptions ??= DefaultCSharpParseOptions;
+        var syntaxTrees = new[] { CSharpSyntaxTree.ParseText(source, cSharpParseOptions, encoding: Encoding.UTF8) };
 
-        return InternalRunGenerator(generator, sources, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
+        return InternalRunGenerator(generator, syntaxTrees, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
     }
 
     internal static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
@@ -35,8 +36,20 @@ internal static class Helpers
         CSharpCompilationOptions? cSharpCompilationOptions
     )
     {
-        var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(source, cSharpParseOptions, encoding: Encoding.UTF8)).ToArray();
         cSharpParseOptions ??= DefaultCSharpParseOptions;
+        var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(source, cSharpParseOptions, encoding: Encoding.UTF8)).ToArray();
+
+        return InternalRunGenerator(generator, syntaxTrees, cSharpParseOptions, metadataReferences, cSharpCompilationOptions);
+    }
+
+    private static (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) InternalRunGenerator(
+        ISourceGenerator generator,
+        SyntaxTree[] syntaxTrees,
+        CSharpParseOptions cSharpParseOptions,
+        IEnumerable<MetadataReference>? metadataReferences,
+        CSharpCompilationOptions? cSharpCompilationOptions
+    )
+    {
         metadataReferences ??= DefaultMetadataReferences;
         cSharpCompilationOptions ??= DefaultCSharpCompilationOptions;
 
@@ -97,11 +110,14 @@ internal static class Helpers
 
     internal static GeneratedSource? InternalGetSource(this GeneratorDriverRunResult result, string filePathEndsWith)
     {
-        var sources = InternalGetSources(result);
+        foreach (var generatedTree in result.GeneratedTrees)
+        {
+            var source = GetGeneratedSource(generatedTree);
+            if (source.FilePath.EndsWith(filePathEndsWith, StringComparison.InvariantCultureIgnoreCase))
+                return source;
+        }
 
-        var matchingSources = sources.Where(x => x.FilePath.EndsWith(filePathEndsWith, StringComparison.InvariantCultureIgnoreCase)).ToList();
-
-        return matchingSources.Count == 0 ? null : matchingSources[0];
+        return null;
     }
 
     internal static ImmutableList<GeneratedSource> InternalGetSources(this GeneratorDriverRunResult result)
