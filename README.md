@@ -9,13 +9,37 @@ Test helpers and extension methods to simplify testing of .NET source generators
 ## Testing a source generator
 
 ```csharp
-var result = SourceGenerator.Run<YourSourceGenerator>("your source");
+var (generator, result) = SourceGenerator.Run<YourSourceGenerator>("your source");
+```
+
+You can also run a generator against multiple source files by passing any `IEnumerable<string>`.
+
+```csharp
+var sources = new[]
+{
+    "namespace Tests; public partial class First;",
+    "namespace Tests; public partial class Second;"
+};
+
+var (generator, result) = SourceGenerator.Run<YourSourceGenerator>(sources);
 ```
 
 ## Testing an incremental source generator
 
 ```csharp
-var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+var (generator, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+```
+
+The same multiple-source overload is available for incremental generators.
+
+```csharp
+var sources = new[]
+{
+    "namespace Tests; public partial class First;",
+    "namespace Tests; public partial class Second;"
+};
+
+var (generator, result) = IncrementalGenerator.Run<YourSourceGenerator>(sources);
 ```
 
 ## Obtaining the generated source
@@ -50,7 +74,7 @@ Using one of the testing framework packages below, you can also assert the diffe
 [![MSTest](https://img.shields.io/nuget/dt/SourceGeneratorTestHelpers.MSTest?label=MSTest)](https://www.nuget.org/packages/SourceGeneratorTestHelpers.MSTest)
 
 ```csharp
-var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
 
 result.ShouldProduce("TestId.g.cs", "expected source");
 ```
@@ -58,7 +82,7 @@ result.ShouldProduce("TestId.g.cs", "expected source");
 _Note: If you do not wish to assert on errors produced during diagnostics of the source generator run, you can simply disable them as such._
 
 ```csharp
-var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
 
 result.ShouldProduce("TestId.g.cs", "expected source", false);
 ```
@@ -75,7 +99,7 @@ public class SourceGeneratorTests
     [Fact]
     public Task ShouldProductTestId()
     {
-        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
         return result.VerifyAsync("TestId.g.cs");
     }
 }
@@ -90,7 +114,7 @@ public class SourceGeneratorTests
     [Test]
     public Task ShouldProductTestId()
     {
-        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
         return result.VerifyAsync("TestId.g.cs");
     }
 }
@@ -106,8 +130,8 @@ public class SourceGeneratorTests :
     [TestMethod]
     public Task ShouldProductTestId()
     {
-        var result = IncrementalGenerator.Run<YourSourceGenerator>("your source");
-        return VerifyAsync("TestId.g.cs");
+        var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
+        return VerifyAsync(result, "TestId.g.cs");
     }
 }
 ```

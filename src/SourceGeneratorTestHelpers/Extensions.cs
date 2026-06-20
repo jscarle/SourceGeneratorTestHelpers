@@ -13,12 +13,7 @@ public static class Extensions
     /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
     public static GeneratedSource? GetSource(this GeneratorDriverRunResult result, string filePathEndsWith)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(result);
-#else
-        if (result is null)
-            throw new ArgumentNullException(nameof(result));
-#endif
 
         return result.InternalGetSource(filePathEndsWith);
     }
@@ -29,12 +24,7 @@ public static class Extensions
     /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
     public static IReadOnlyCollection<GeneratedSource> GetSources(this GeneratorDriverRunResult result)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(result);
-#else
-        if (result is null)
-            throw new ArgumentNullException(nameof(result));
-#endif
 
         return result.InternalGetSources();
     }

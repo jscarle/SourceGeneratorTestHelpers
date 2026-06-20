@@ -39,21 +39,11 @@ internal static class Diff
             switch (line.Type)
             {
                 case ChangeType.Inserted:
-                    diff.AppendLine(
-#if NET6_0_OR_GREATER
-                        CultureInfo.InvariantCulture,
-#endif
-                        $"{prefix,leftMargin}+ {lineText}"
-                    );
+                    diff.AppendLine(CultureInfo.InvariantCulture, $"{prefix,leftMargin}+ {lineText}");
 
                     break;
                 case ChangeType.Deleted:
-                    diff.AppendLine(
-#if NET6_0_OR_GREATER
-                        CultureInfo.InvariantCulture,
-#endif
-                        $"{prefix,leftMargin}- {lineText}"
-                    );
+                    diff.AppendLine(CultureInfo.InvariantCulture, $"{prefix,leftMargin}- {lineText}");
 
                     break;
             }
@@ -64,14 +54,6 @@ internal static class Diff
 
     private static string? NormalizeLineEndings(string? str, bool normalize)
     {
-        return normalize
-            ? str?.Replace(
-                "\r\n",
-                "\n"
-#if NET6_0_OR_GREATER
-            , StringComparison.InvariantCulture
-#endif
-            )
-            : str;
+        return normalize ? str?.Replace("\r\n", "\n", StringComparison.InvariantCulture) : str;
     }
 }

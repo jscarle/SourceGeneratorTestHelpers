@@ -30,11 +30,7 @@ public readonly struct GeneratedSource : IEquatable<GeneratedSource>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return FilePath.GetHashCode(
-            #if NET6_0_OR_GREATER
-            StringComparison.Ordinal
-#endif
-        );
+        return FilePath.GetHashCode(StringComparison.Ordinal);
     }
 
     /// <summary>Determines if two <see cref="GeneratedSource"/> instances are equal.</summary>
