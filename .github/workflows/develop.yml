@@ -2,9 +2,11 @@ name: Release
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - develop
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - develop
 
 jobs:
   build:
@@ -17,15 +19,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: 'csharp'
 
       - name: Setup .NET 10.0
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.x
 
@@ -39,4 +41,4 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal --framework net8.0
 
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
