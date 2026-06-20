@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers.MSTest</RootNamespace>
@@ -28,17 +28,18 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <Optimize>true</Optimize>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
-        <PackageReference Include="SourceGeneratorTestHelpers" Version="10.0.0" />
-        <PackageReference Include="MSTest.TestFramework" Version="4.0.2" />
-        <PackageReference Include="Verify.MSTest" Version="20.8.2" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="[4.14.0]"/>
+        <PackageReference Include="SourceGeneratorTestHelpers" Version="10.0.0"/>
+        <PackageReference Include="MSTest.TestFramework" Version="4.2.3"/>
+        <PackageReference Include="Verify.MSTest" Version="[20.8.2]"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" PrivateAssets="All"/>
         <None Include="..\..\LICENSE.md">
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
@@ -50,5 +51,8 @@
             <Visible>False</Visible>
         </None>
     </ItemGroup>
-
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
 </Project>
