@@ -64,10 +64,36 @@ public static class GeneratorDriverRunResultExtensions
         ArgumentNullException.ThrowIfNull(result);
 
         var generatedSource = result.InternalGetSource(filePathEndsWith);
-        var source = generatedSource.HasValue ? generatedSource.Value.Source : "";
+        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
 
         // ReSharper disable once ExplicitCallerInfoArgument
-        return Verify(source, "txt", verifySettings, sourceFile);
+        return VerifySource(source, verifySettings, sourceFile);
+    }
+
+    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="Verifier.Verify(string?, string, VerifySettings?, string)"/>.</summary>
+    /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
+    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
+    /// <param name="snapshotName">The stable snapshot file name to use.</param>
+    /// <param name="verifySettings">The verify settings.</param>
+    /// <param name="sourceFile">The source file.</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
+    /// <exception cref="ArgumentException">If <paramref name="snapshotName"/> is null or whitespace.</exception>
+    public static SettingsTask VerifyAsync(
+        this GeneratorDriverRunResult result,
+        string filePathEndsWith,
+        string snapshotName,
+        VerifySettings? verifySettings = null,
+        [CallerFilePath] string sourceFile = ""
+    )
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentException.ThrowIfNullOrWhiteSpace(snapshotName);
+
+        var generatedSource = result.InternalGetSource(filePathEndsWith);
+        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        return VerifySource(source, verifySettings, sourceFile, snapshotName);
     }
 
     /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="Verifier.Verify(string?, string, VerifySettings?, string)"/>.</summary>
@@ -97,9 +123,52 @@ public static class GeneratorDriverRunResultExtensions
         );
 
         var generatedSource = result.Result.InternalGetSource(filePathEndsWith);
-        var source = generatedSource.HasValue ? generatedSource.Value.Source : "";
+        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
 
         // ReSharper disable once ExplicitCallerInfoArgument
-        return Verify(source, "txt", verifySettings, sourceFile);
+        return VerifySource(source, verifySettings, sourceFile);
+    }
+
+    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="Verifier.Verify(string?, string, VerifySettings?, string)"/>.</summary>
+    /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
+    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
+    /// <param name="snapshotName">The stable snapshot file name to use.</param>
+    /// <param name="assertOnErrors"><see langword="true"/> to assert on reported errors, <see langword="false"/> othwerwise. Defaults to <see langword="true"/>.</param>
+    /// <param name="assertOnWarnings"><see langword="true"/> to assert on reported warnings, <see langword="false"/> othwerwise. Defaults to <see langword="false"/>.</param>
+    /// <param name="verifySettings">The verify settings.</param>
+    /// <param name="sourceFile">The source file.</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
+    /// <exception cref="ArgumentException">If <paramref name="snapshotName"/> is null or whitespace.</exception>
+    public static SettingsTask VerifyAsync(
+        this (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) result,
+        string filePathEndsWith,
+        string snapshotName,
+        bool assertOnErrors = true,
+        bool assertOnWarnings = false,
+        VerifySettings? verifySettings = null,
+        [CallerFilePath] string sourceFile = ""
+    )
+    {
+        ArgumentNullException.ThrowIfNull(result.Result);
+        ArgumentException.ThrowIfNullOrWhiteSpace(snapshotName);
+
+        result.CompilationDiagnostics.InternalAssertOnDiagnostics(assertOnErrors, assertOnWarnings, message => throw new XunitException(message),
+            "There were errors in the compilation."
+        );
+        result.Result.Diagnostics.InternalAssertOnDiagnostics(assertOnErrors, assertOnWarnings, message => throw new XunitException(message),
+            "There were errors in the output generated by the source generator."
+        );
+
+        var generatedSource = result.Result.InternalGetSource(filePathEndsWith);
+        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        return VerifySource(source, verifySettings, sourceFile, snapshotName);
+    }
+
+    private static SettingsTask VerifySource(string source, VerifySettings? verifySettings, string sourceFile, string? snapshotName = null)
+    {
+        var task = Verify(source, "txt", verifySettings, sourceFile);
+        return snapshotName is null ? task : task.UseFileName(snapshotName);
     }
 }
