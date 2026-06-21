@@ -90,6 +90,7 @@ result.ShouldProduce("TestId.g.cs", "expected source", false);
 ### Verify the difference
 
 Support for [Verify](https://github.com/VerifyTests/Verify) is built-in using the `VerifyAsync` method.
+Generated source text is normalized to LF line endings before it is passed to Verify.
 
 #### XUnit
 
@@ -103,6 +104,12 @@ public class SourceGeneratorTests
         return result.VerifyAsync("TestId.g.cs");
     }
 }
+```
+
+For parameterized tests, pass a stable snapshot name to avoid framework-specific parameter text in the snapshot file name:
+
+```cs
+return result.VerifyAsync("TestId.g.cs", snapshotName: "SourceGeneratorTests.ShouldProduceTestId");
 ```
 
 #### NUnit
