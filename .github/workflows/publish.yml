@@ -19,10 +19,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v7
 
-    - name: Setup .NET 10.0
+    - name: Setup .NET 11.0
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 10.x
+        global-json-file: global.json
 
     - name: Restore dependencies
       run: dotnet restore

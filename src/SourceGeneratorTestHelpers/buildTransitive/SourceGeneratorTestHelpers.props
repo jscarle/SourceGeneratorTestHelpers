@@ -1,0 +1,8 @@
+<Project>
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>SourceGeneratorTestHelpers.TargetFrameworks</_Parameter1>
+            <_Parameter2>$(TargetFrameworks)</_Parameter2>
+        </AssemblyAttribute>
+    </ItemGroup>
+</Project>

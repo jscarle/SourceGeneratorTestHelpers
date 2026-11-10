@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers.NUnit</RootNamespace>
-        <LangVersion>latest</LangVersion>
-        <Version>10.1.2</Version>
+        <Version>11.0.0</Version>
         <Title>SourceGeneratorTestHelpers.NUnit</Title>
         <Authors>Jean-Sebastien Carle</Authors>
         <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
@@ -18,8 +17,8 @@
         <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>testing source-generators nunit</PackageTags>
-        <AssemblyVersion>10.1.2.0</AssemblyVersion>
-        <FileVersion>10.1.2.0</FileVersion>
+        <AssemblyVersion>11.0.0.0</AssemblyVersion>
+        <FileVersion>11.0.0.0</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -33,10 +32,12 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="[4.14.0]"/>
-        <PackageReference Include="SourceGeneratorTestHelpers" Version="10.1.0" />
         <PackageReference Include="NUnit" Version="4.6.1"/>
-        <PackageReference Include="Verify.NUnit" Version="31.20.0"/>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SourceGeneratorTestHelpers\SourceGeneratorTestHelpers.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

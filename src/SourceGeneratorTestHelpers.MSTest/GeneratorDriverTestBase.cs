@@ -1,12 +1,18 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 using Microsoft.CodeAnalysis;
 using SourceGeneratorTestHelpers.Common;
+using MSTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
 namespace SourceGeneratorTestHelpers.MSTest;
 
-public abstract class GeneratorDriverTestBase : VerifyBase
+/// <summary>Provides generated-source assertions and snapshot comparisons for MSTest.</summary>
+public abstract class GeneratorDriverTestBase
 {
+    /// <summary>Gets or sets the test context supplied by MSTest.</summary>
+    public MSTestContext? TestContext { get; set; }
+
     /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path ending matches the expected source.</summary>
     /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
     /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
@@ -48,72 +54,81 @@ public abstract class GeneratorDriverTestBase : VerifyBase
         );
     }
 
-    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="VerifyBase.Verify(string?, string, VerifySettings?, string)"/>.</summary>
-    /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
-    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
-    /// <param name="verifySettings">The verify settings.</param>
-    /// <param name="sourceFile">The source file.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
-    public SettingsTask VerifyAsync(
+    /// <summary>Compares the generated source with an approved text snapshot beside the calling test source file.</summary>
+    /// <param name="result">The generator result to verify.</param>
+    /// <param name="filePathEndsWith">The generated source file path suffix to select.</param>
+    /// <param name="cancellationToken">The token used to cancel snapshot file operations.</param>
+    /// <param name="sourceFile">The fully qualified calling test source file path, supplied by the compiler.</param>
+    /// <returns>A task that completes when the snapshot matches, or fails after writing a received snapshot.</returns>
+    /// <remarks>Missing or changed snapshots must be reviewed and approved manually. Line endings are normalized to LF.</remarks>
+    /// <exception cref="ArgumentNullException">The generator result is null.</exception>
+    /// <exception cref="ArgumentException">A file suffix, caller path, or snapshot name is invalid.</exception>
+    public Task VerifyAsync(
         GeneratorDriverRunResult result,
         string filePathEndsWith,
-        VerifySettings? verifySettings = null,
+        CancellationToken cancellationToken = default,
         [CallerFilePath] string sourceFile = ""
     )
     {
         ArgumentNullException.ThrowIfNull(result);
 
-        var generatedSource = result.InternalGetSource(filePathEndsWith);
-        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
+        var snapshotPaths = GetSnapshotPaths(filePathEndsWith, sourceFile);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        // ReSharper disable once ExplicitCallerInfoArgument
-        return VerifySource(source, verifySettings, sourceFile);
+        return SourceSnapshot.VerifyAsync(result, filePathEndsWith, snapshotPaths, message => throw new AssertFailedException(message), cancellationToken);
     }
 
-    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="VerifyBase.Verify(string?, string, VerifySettings?, string)"/>.</summary>
-    /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
-    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
-    /// <param name="snapshotName">The stable snapshot file name to use.</param>
-    /// <param name="verifySettings">The verify settings.</param>
-    /// <param name="sourceFile">The source file.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
-    /// <exception cref="ArgumentException">If <paramref name="snapshotName"/> is null or whitespace.</exception>
-    public SettingsTask VerifyAsync(
+    /// <summary>Compares the generated source with an approved text snapshot beside the calling test source file.</summary>
+    /// <param name="result">The generator result to verify.</param>
+    /// <param name="filePathEndsWith">The generated source file path suffix to select.</param>
+    /// <param name="snapshotName">The snapshot file name without the .verified.txt or .received.txt suffix.</param>
+    /// <param name="cancellationToken">The token used to cancel snapshot file operations.</param>
+    /// <param name="sourceFile">The fully qualified calling test source file path, supplied by the compiler.</param>
+    /// <returns>A task that completes when the snapshot matches, or fails after writing a received snapshot.</returns>
+    /// <remarks>Missing or changed snapshots must be reviewed and approved manually. Line endings are normalized to LF.</remarks>
+    /// <exception cref="ArgumentNullException">The generator result is null.</exception>
+    /// <exception cref="ArgumentException">A file suffix, caller path, or snapshot name is invalid.</exception>
+    public Task VerifyAsync(
         GeneratorDriverRunResult result,
         string filePathEndsWith,
         string snapshotName,
-        VerifySettings? verifySettings = null,
+        CancellationToken cancellationToken = default,
         [CallerFilePath] string sourceFile = ""
     )
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentException.ThrowIfNullOrWhiteSpace(snapshotName);
 
-        var generatedSource = result.InternalGetSource(filePathEndsWith);
-        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
+        var snapshotPaths = GetSnapshotPaths(filePathEndsWith, sourceFile, snapshotName);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        // ReSharper disable once ExplicitCallerInfoArgument
-        return VerifySource(source, verifySettings, sourceFile, snapshotName);
+        return SourceSnapshot.VerifyAsync(result, filePathEndsWith, snapshotPaths, message => throw new AssertFailedException(message), cancellationToken);
     }
 
-    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="VerifyBase.Verify(string?, string, VerifySettings?, string)"/>.</summary>
-    /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
-    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
-    /// <param name="assertOnErrors"><see langword="true"/> to assert on reported errors, <see langword="false"/> othwerwise. Defaults to <see langword="true"/>.</param>
-    /// <param name="assertOnWarnings"><see langword="true"/> to assert on reported warnings, <see langword="false"/> othwerwise. Defaults to <see langword="false"/>.</param>
-    /// <param name="verifySettings">The verify settings.</param>
-    /// <param name="sourceFile">The source file.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
-    public SettingsTask VerifyAsync(
+    /// <summary>Compares the generated source with an approved text snapshot beside the calling test source file.</summary>
+    /// <param name="result">The generator result to verify.</param>
+    /// <param name="filePathEndsWith">The generated source file path suffix to select.</param>
+    /// <param name="assertOnErrors">Whether compilation and generator errors fail the assertion. Defaults to true.</param>
+    /// <param name="assertOnWarnings">Whether compilation and generator warnings fail the assertion. Defaults to false.</param>
+    /// <param name="cancellationToken">The token used to cancel snapshot file operations.</param>
+    /// <param name="sourceFile">The fully qualified calling test source file path, supplied by the compiler.</param>
+    /// <returns>A task that completes when the snapshot matches, or fails after writing a received snapshot.</returns>
+    /// <remarks>Missing or changed snapshots must be reviewed and approved manually. Line endings are normalized to LF.</remarks>
+    /// <exception cref="ArgumentNullException">The generator result is null.</exception>
+    /// <exception cref="ArgumentException">A file suffix, caller path, or snapshot name is invalid.</exception>
+    public Task VerifyAsync(
         (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) result,
         string filePathEndsWith,
         bool assertOnErrors = true,
         bool assertOnWarnings = false,
-        VerifySettings? verifySettings = null,
+        CancellationToken cancellationToken = default,
         [CallerFilePath] string sourceFile = ""
     )
     {
         ArgumentNullException.ThrowIfNull(result.Result);
+
+        var snapshotPaths = GetSnapshotPaths(filePathEndsWith, sourceFile);
+        cancellationToken.ThrowIfCancellationRequested();
 
         result.CompilationDiagnostics.InternalAssertOnDiagnostics(assertOnErrors, assertOnWarnings, message => throw new AssertFailedException(message),
             "There were errors in the compilation."
@@ -122,35 +137,36 @@ public abstract class GeneratorDriverTestBase : VerifyBase
             "There were errors in the output generated by the source generator."
         );
 
-        var generatedSource = result.Result.InternalGetSource(filePathEndsWith);
-        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
-
-        // ReSharper disable once ExplicitCallerInfoArgument
-        return VerifySource(source, verifySettings, sourceFile);
+        return SourceSnapshot.VerifyAsync(result.Result, filePathEndsWith, snapshotPaths, message => throw new AssertFailedException(message), cancellationToken);
     }
 
-    /// <summary>Verifies that the generated source from a <see cref="GeneratorDriverRunResult"/> with a specific file path using <see cref="VerifyBase.Verify(string?, string, VerifySettings?, string)"/>.</summary>
-    /// <param name="result">The <see cref="GeneratorDriverRunResult"/> to get the source from.</param>
-    /// <param name="filePathEndsWith">The string that the generated source's file path should end with.</param>
-    /// <param name="snapshotName">The stable snapshot file name to use.</param>
-    /// <param name="assertOnErrors"><see langword="true"/> to assert on reported errors, <see langword="false"/> othwerwise. Defaults to <see langword="true"/>.</param>
-    /// <param name="assertOnWarnings"><see langword="true"/> to assert on reported warnings, <see langword="false"/> othwerwise. Defaults to <see langword="false"/>.</param>
-    /// <param name="verifySettings">The verify settings.</param>
-    /// <param name="sourceFile">The source file.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="result"/> is null.</exception>
-    /// <exception cref="ArgumentException">If <paramref name="snapshotName"/> is null or whitespace.</exception>
-    public SettingsTask VerifyAsync(
+    /// <summary>Compares the generated source with an approved text snapshot beside the calling test source file.</summary>
+    /// <param name="result">The generator result to verify.</param>
+    /// <param name="filePathEndsWith">The generated source file path suffix to select.</param>
+    /// <param name="snapshotName">The snapshot file name without the .verified.txt or .received.txt suffix.</param>
+    /// <param name="assertOnErrors">Whether compilation and generator errors fail the assertion. Defaults to true.</param>
+    /// <param name="assertOnWarnings">Whether compilation and generator warnings fail the assertion. Defaults to false.</param>
+    /// <param name="cancellationToken">The token used to cancel snapshot file operations.</param>
+    /// <param name="sourceFile">The fully qualified calling test source file path, supplied by the compiler.</param>
+    /// <returns>A task that completes when the snapshot matches, or fails after writing a received snapshot.</returns>
+    /// <remarks>Missing or changed snapshots must be reviewed and approved manually. Line endings are normalized to LF.</remarks>
+    /// <exception cref="ArgumentNullException">The generator result is null.</exception>
+    /// <exception cref="ArgumentException">A file suffix, caller path, or snapshot name is invalid.</exception>
+    public Task VerifyAsync(
         (ImmutableArray<Diagnostic> CompilationDiagnostics, GeneratorDriverRunResult Result) result,
         string filePathEndsWith,
         string snapshotName,
         bool assertOnErrors = true,
         bool assertOnWarnings = false,
-        VerifySettings? verifySettings = null,
+        CancellationToken cancellationToken = default,
         [CallerFilePath] string sourceFile = ""
     )
     {
         ArgumentNullException.ThrowIfNull(result.Result);
         ArgumentException.ThrowIfNullOrWhiteSpace(snapshotName);
+
+        var snapshotPaths = GetSnapshotPaths(filePathEndsWith, sourceFile, snapshotName);
+        cancellationToken.ThrowIfCancellationRequested();
 
         result.CompilationDiagnostics.InternalAssertOnDiagnostics(assertOnErrors, assertOnWarnings, message => throw new AssertFailedException(message),
             "There were errors in the compilation."
@@ -159,16 +175,30 @@ public abstract class GeneratorDriverTestBase : VerifyBase
             "There were errors in the output generated by the source generator."
         );
 
-        var generatedSource = result.Result.InternalGetSource(filePathEndsWith);
-        var source = generatedSource.HasValue ? generatedSource.Value.Source.ReplaceLineEndings("\n") : "";
-
-        // ReSharper disable once ExplicitCallerInfoArgument
-        return VerifySource(source, verifySettings, sourceFile, snapshotName);
+        return SourceSnapshot.VerifyAsync(result.Result, filePathEndsWith, snapshotPaths, message => throw new AssertFailedException(message), cancellationToken);
     }
 
-    private SettingsTask VerifySource(string source, VerifySettings? verifySettings, string sourceFile, string? snapshotName = null)
+    private (string VerifiedPath, string ReceivedPath) GetSnapshotPaths(string filePathEndsWith, string sourceFile, string? snapshotName = null)
     {
-        var task = Verify(source, "txt", verifySettings, sourceFile);
-        return snapshotName is null ? task : task.UseFileName(snapshotName);
+        var testClass = GetType();
+        if (snapshotName is null)
+        {
+            // Respect an existing consumer TestContext property that hides the inherited property.
+            var context = TestContext;
+            if (context is null)
+                context = testClass.GetProperty(nameof(TestContext), BindingFlags.Instance | BindingFlags.Public)?.GetValue(this) as MSTestContext;
+            if (context is null)
+                throw new InvalidOperationException("Automatic snapshot naming requires the test context supplied by MSTest. Supply snapshotName when calling outside a test.");
+
+            var method = testClass.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .FirstOrDefault(candidate => string.Equals(candidate.Name, context.TestName, StringComparison.Ordinal));
+            if (method is null)
+                throw new InvalidOperationException($"Cannot find the running MSTest method '{context.TestName}' on '{testClass.FullName}'.");
+
+            var parameters = method.GetParameters();
+            snapshotName = SnapshotName.Create(testClass, method.Name, parameters, context.TestData ?? []);
+        }
+
+        return SourceSnapshot.GetSnapshotPaths(filePathEndsWith, sourceFile, snapshotName, testClass.Assembly);
     }
 }
