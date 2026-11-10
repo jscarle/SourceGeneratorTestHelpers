@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
+        <OutputType>Exe</OutputType>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0"/>
+        <PackageReference Include="xunit.v3" Version="3.2.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\SourceGeneratorTestHelpers\SourceGeneratorTestHelpers.csproj"/>
+        <ProjectReference Include="..\..\src\SourceGeneratorTestHelpers.XUnit\SourceGeneratorTestHelpers.XUnit.csproj"/>
+        <ProjectReference Include="..\..\src\SourceGeneratorTestHelpers.NUnit\SourceGeneratorTestHelpers.NUnit.csproj"/>
+        <ProjectReference Include="..\..\src\SourceGeneratorTestHelpers.MSTest\SourceGeneratorTestHelpers.MSTest.csproj"/>
+    </ItemGroup>
+
+    <Import Project="..\..\src\SourceGeneratorTestHelpers\buildTransitive\SourceGeneratorTestHelpers.props"/>
+
+</Project>

@@ -87,18 +87,22 @@ var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
 result.ShouldProduce("TestId.g.cs", "expected source", false);
 ```
 
-### Verify the difference
+### Compare with an approved snapshot
 
-Support for [Verify](https://github.com/VerifyTests/Verify) is built-in using the `VerifyAsync` method.
-Generated source text is normalized to LF line endings before it is passed to Verify.
+`VerifyAsync` provides built-in text snapshot testing without a Verify package dependency.
+It returns a standard `Task` and uses the assertion exception for your test framework.
 
 #### XUnit
 
-```cs
+```csharp
+using SourceGeneratorTestHelpers;
+using SourceGeneratorTestHelpers.XUnit;
+using Xunit;
+
 public class SourceGeneratorTests
 {
     [Fact]
-    public Task ShouldProductTestId()
+    public Task ShouldProduceTestId()
     {
         var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
         return result.VerifyAsync("TestId.g.cs");
@@ -106,20 +110,18 @@ public class SourceGeneratorTests
 }
 ```
 
-For parameterized tests, pass a stable snapshot name to avoid framework-specific parameter text in the snapshot file name:
-
-```cs
-return result.VerifyAsync("TestId.g.cs", snapshotName: "SourceGeneratorTests.ShouldProduceTestId");
-```
-
 #### NUnit
 
-```cs
+```csharp
+using NUnit.Framework;
+using SourceGeneratorTestHelpers;
+using SourceGeneratorTestHelpers.NUnit;
+
 [TestFixture]
 public class SourceGeneratorTests
 {
     [Test]
-    public Task ShouldProductTestId()
+    public Task ShouldProduceTestId()
     {
         var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
         return result.VerifyAsync("TestId.g.cs");
@@ -129,16 +131,76 @@ public class SourceGeneratorTests
 
 #### MSTest
 
-```cs
+```csharp
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SourceGeneratorTestHelpers;
+using SourceGeneratorTestHelpers.MSTest;
+
 [TestClass]
-public class SourceGeneratorTests :
-    GeneratorDriverTestBase
+public class SourceGeneratorTests : GeneratorDriverTestBase
 {
     [TestMethod]
-    public Task ShouldProductTestId()
+    public Task ShouldProduceTestId()
     {
         var (_, result) = IncrementalGenerator.Run<YourSourceGenerator>("your source");
         return VerifyAsync(result, "TestId.g.cs");
     }
 }
 ```
+
+#### Snapshot files and approval
+
+Snapshots are stored beside the calling test source file. Default names match Verify 31.20.0:
+`<TestClass>.<TestMethod>[_parameter=value...].verified.txt`. The test class and method come from the
+running test framework, so renaming the source file does not rename snapshots. Nested test classes include
+their enclosing class name. The test above uses `SourceGeneratorTests.ShouldProduceTestId.verified.txt`.
+The compiler supplies the caller file path only to locate the snapshot directory. If a build maps source paths to a location
+that is unavailable when tests run, pass a fully qualified `sourceFile` path in an existing directory.
+
+When the approved file is missing or the output changes, the assertion writes a `.received.txt` file and fails.
+In projects targeting multiple frameworks, received names include the selected runtime target, for example
+`SourceGeneratorTests.ShouldProduceTestId.DotNet11_0.received.txt`, matching Verify's convention.
+Approved snapshots remain shared across target frameworks.
+Review the received file, then rename or copy it over the corresponding `.verified.txt` file to approve the output.
+Commit approved files to source control and ignore `*.received.txt`. A passing comparison deletes any stale received file.
+Tests never create or overwrite approved files automatically and do not launch external diff tools.
+
+Both texts are normalized to LF line endings before ordinal comparison. Other whitespace, including trailing
+newlines, remains significant. Received files use UTF-8 without a byte order mark. Missing generated output fails
+explicitly; an existing generated file with empty content can match an empty approved snapshot.
+
+Parameterized tests automatically append parameter names and values, for example
+`SourceGeneratorTests.ShouldProduceTestId_input=empty_enabled=True.verified.txt`. Null values use `null`,
+numeric and date values use invariant formatting, and characters invalid in parameter values are replaced
+with `-`. NUnit fixture constructor arguments are included before method arguments.
+
+For custom names or multiple snapshots in one test, supply a distinct, stable name for each output:
+
+```csharp
+await result.VerifyAsync("TestId.g.cs", snapshotName: "GeneratesTestId.EmptyInput");
+```
+
+This uses `GeneratesTestId.EmptyInput.verified.txt` beside the test source file. Names exclude the
+`.verified.txt` suffix and must be valid file names without directory separators. Names are not sanitized automatically.
+Automatic naming requires a running test in the matching framework. Explicit names can also be used outside
+that framework's runner. Use distinct names for multiple comparisons in one test; calls targeting the same
+received file must not overlap.
+
+The diagnostics-tuple overloads retain `assertOnErrors: true` and `assertOnWarnings: false` by default.
+Argument validation and enabled diagnostic assertions happen before snapshot file access. Cancellation and
+file-access failures propagate to the caller; pass `cancellationToken` to cancel asynchronous file operations.
+The raw `GeneratorDriverRunResult` overloads compare generated text without asserting diagnostics.
+
+#### Migrating from Verify
+
+- Ordinary `await result.VerifyAsync("TestId.g.cs")` calls keep the same shape, but now return `Task` instead of `SettingsTask`.
+- Remove `VerifySettings` arguments, fluent Verify configuration, and Verify-specific initialization.
+  This feature compares generated text; it does not provide Verify's object serialization or scrubbers.
+- Existing text snapshots using Verify's default class, method, and parameter naming can be reused directly.
+  For custom Verify naming, pass the complete existing file stem as `snapshotName`. Move snapshots from custom
+  Verify directories beside the calling test source file.
+- `GeneratorDriverTestBase` remains available for MSTest but no longer inherits `VerifyBase`.
+  Tests that used other inherited Verify methods must replace those calls or reference Verify independently.
+- MSTest supplies the inherited `TestContext` property for automatic naming. Existing consumer `TestContext`
+  properties are respected as well.
+- The helper packages no longer supply Verify's implicit imports. Import your test framework and helper namespace explicitly.

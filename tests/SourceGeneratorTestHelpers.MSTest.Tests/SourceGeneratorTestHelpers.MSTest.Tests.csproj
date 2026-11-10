@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0"/>
+        <PackageReference Include="MSTest.TestFramework" Version="4.2.3"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="4.2.3" PrivateAssets="All"/>
+        <ProjectReference Include="..\..\src\SourceGeneratorTestHelpers.MSTest\SourceGeneratorTestHelpers.MSTest.csproj"/>
+        <Compile Include="..\SourceGeneratorTestHelpers.Tests\Fixtures\SnapshotGenerator.cs" Link="Fixtures\SnapshotGenerator.cs"/>
+    </ItemGroup>
+    <Import Project="..\..\src\SourceGeneratorTestHelpers\buildTransitive\SourceGeneratorTestHelpers.props"/>
+</Project>

@@ -398,3 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 *.DotSettings
 .idea/
+
+# Snapshot files awaiting manual review
+*.received.txt

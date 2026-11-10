@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0"/>
+        <PackageReference Include="NUnit" Version="4.6.1"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" PrivateAssets="All"/>
+        <ProjectReference Include="..\..\src\SourceGeneratorTestHelpers.NUnit\SourceGeneratorTestHelpers.NUnit.csproj"/>
+        <Compile Include="..\SourceGeneratorTestHelpers.Tests\Fixtures\SnapshotGenerator.cs" Link="Fixtures\SnapshotGenerator.cs"/>
+    </ItemGroup>
+    <Import Project="..\..\src\SourceGeneratorTestHelpers\buildTransitive\SourceGeneratorTestHelpers.props"/>
+</Project>

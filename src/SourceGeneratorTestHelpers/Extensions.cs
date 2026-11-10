@@ -1,9 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using SourceGeneratorTestHelpers.Common;
 
 namespace SourceGeneratorTestHelpers;
 
 /// <summary>Provides extension methods for the <see cref="GeneratorDriverRunResult"/> class.</summary>
+[SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "Retain the published extension container name for source and binary compatibility.")]
 public static class Extensions
 {
     /// <summary>Gets the generated source ending with a specific file path from a <see cref="GeneratorDriverRunResult"/>.</summary>

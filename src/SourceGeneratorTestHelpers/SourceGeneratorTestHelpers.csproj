@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>SourceGeneratorTestHelpers</RootNamespace>
-        <LangVersion>latest</LangVersion>
-        <Version>10.1.0</Version>
+        <Version>11.0.0</Version>
         <Title>SourceGeneratorTestHelpers</Title>
         <Authors>Jean-Sebastien Carle</Authors>
         <Description>Test helpers and extension methods to simplify testing of .NET source generators.</Description>
@@ -18,8 +17,8 @@
         <RepositoryUrl>https://github.com/jscarle/SourceGeneratorTestHelpers</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>testing source-generators</PackageTags>
-        <AssemblyVersion>10.1.0.0</AssemblyVersion>
-        <FileVersion>10.1.0.0</FileVersion>
+        <AssemblyVersion>11.0.0.0</AssemblyVersion>
+        <FileVersion>11.0.0.0</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -35,6 +34,7 @@
         <InternalsVisibleTo Include="SourceGeneratorTestHelpers.XUnit"/>
         <InternalsVisibleTo Include="SourceGeneratorTestHelpers.NUnit"/>
         <InternalsVisibleTo Include="SourceGeneratorTestHelpers.MSTest"/>
+        <InternalsVisibleTo Include="SourceGeneratorTestHelpers.Tests"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -55,6 +55,10 @@
             <PackagePath>\</PackagePath>
             <Visible>False</Visible>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="buildTransitive\SourceGeneratorTestHelpers.props" Pack="true" PackagePath="buildTransitive\SourceGeneratorTestHelpers.props"/>
     </ItemGroup>
 
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
